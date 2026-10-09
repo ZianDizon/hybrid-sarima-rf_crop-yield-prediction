@@ -1,0 +1,9 @@
+# Python & PyCharm junk
+.venv/
+__pycache__/
+.idea/
+.DS_Store
+
+# React junk (we will ignore node_modules globally or per folder)
+dss-dashboard/node_modules/
+dss-dashboard/dist/
