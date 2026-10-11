@@ -652,6 +652,246 @@ select:focus-visible {
   }
 }
 
+.theme-toggle {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  place-items: center;
+  border: 1px solid #d5dfd7;
+  border-radius: 6px;
+  background: #fff;
+  color: #385545;
+  cursor: pointer;
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+}
+
+.theme-toggle:hover {
+  border-color: #9eafa2;
+  background: #f1f5f2;
+}
+
+.theme-toggle svg {
+  width: 19px;
+  height: 19px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
+.dashboard-shell[data-theme="dark"] {
+  min-height: 100vh;
+  background: #151c18;
+  color: #e2e9e3;
+  color-scheme: dark;
+}
+
+body:has(.dashboard-shell[data-theme="dark"]) {
+  background: #151c18;
+}
+
+.dashboard-shell[data-theme="dark"] .brand-eyebrow,
+.dashboard-shell[data-theme="dark"] .section-kicker {
+  color: #91b89a;
+}
+
+.dashboard-shell[data-theme="dark"] .dashboard-title,
+.dashboard-shell[data-theme="dark"] .panel-heading h2,
+.dashboard-shell[data-theme="dark"] .chart-heading h2,
+.dashboard-shell[data-theme="dark"] .interventions-panel h2,
+.dashboard-shell[data-theme="dark"] .validation-title {
+  color: #e5eee7;
+}
+
+.dashboard-shell[data-theme="dark"] .dashboard-subtitle,
+.dashboard-shell[data-theme="dark"] .dashboard-status,
+.dashboard-shell[data-theme="dark"] .unit-label,
+.dashboard-shell[data-theme="dark"] .field-hint,
+.dashboard-shell[data-theme="dark"] .ranking-label,
+.dashboard-shell[data-theme="dark"] .ranking-score,
+.dashboard-shell[data-theme="dark"] .metric-label,
+.dashboard-shell[data-theme="dark"] .recommendation-action,
+.dashboard-shell[data-theme="dark"] .validation-strip {
+  color: #a5b3a8;
+}
+
+.dashboard-shell[data-theme="dark"] .status-dot {
+  background: #70b783;
+  box-shadow: 0 0 0 3px #283b2d;
+}
+
+.dashboard-shell[data-theme="dark"] .export-button,
+.dashboard-shell[data-theme="dark"] .forecast-button {
+  border-color: #3e8057;
+  background: #3e8057;
+}
+
+.dashboard-shell[data-theme="dark"] .export-button:hover,
+.dashboard-shell[data-theme="dark"] .forecast-button:hover:not(:disabled) {
+  border-color: #4b9567;
+  background: #4b9567;
+}
+
+.dashboard-shell[data-theme="dark"] .theme-toggle {
+  border-color: #45544a;
+  background: #202923;
+  color: #e4c66f;
+}
+
+.dashboard-shell[data-theme="dark"] .theme-toggle:hover {
+  border-color: #687a6c;
+  background: #29352d;
+}
+
+.dashboard-shell[data-theme="dark"] .location-chip,
+.dashboard-shell[data-theme="dark"] .chart-crop {
+  border-color: #3b4a3f;
+  background: #202923;
+  color: #c6d9ca;
+}
+
+.dashboard-shell[data-theme="dark"] .location-chip span:first-child {
+  color: #9ead9f;
+}
+
+.dashboard-shell[data-theme="dark"] .control-panel,
+.dashboard-shell[data-theme="dark"] .chart-panel,
+.dashboard-shell[data-theme="dark"] .interventions-panel,
+.dashboard-shell[data-theme="dark"] .metric-panel,
+.dashboard-shell[data-theme="dark"] .validation-strip {
+  border-color: #354239;
+  background: #1c2520;
+}
+
+.dashboard-shell[data-theme="dark"] .panel-heading,
+.dashboard-shell[data-theme="dark"] .section-title,
+.dashboard-shell[data-theme="dark"] .recommendation-row {
+  border-color: #354239;
+}
+
+.dashboard-shell[data-theme="dark"] .section-title,
+.dashboard-shell[data-theme="dark"] .field-label {
+  color: #d1ddd3;
+}
+
+.dashboard-shell[data-theme="dark"] .form-control {
+  border-color: #46564b;
+  background: #151d18;
+  color: #e2e9e3;
+}
+
+.dashboard-shell[data-theme="dark"] .form-control::placeholder {
+  color: #829187;
+}
+
+.dashboard-shell[data-theme="dark"] .form-control:hover {
+  border-color: #718776;
+}
+
+.dashboard-shell[data-theme="dark"] .form-control option {
+  background: #1c2520;
+  color: #e2e9e3;
+}
+
+.dashboard-shell[data-theme="dark"] .range-control {
+  accent-color: #76b789;
+}
+
+.dashboard-shell[data-theme="dark"] .temperature-range {
+  accent-color: #d3935e;
+}
+
+.dashboard-shell[data-theme="dark"] .inline-error {
+  border-color: #d66b60;
+  background: #3a2523;
+  color: #ffc2b9;
+}
+
+.dashboard-shell[data-theme="dark"] .forecast-button:disabled,
+.dashboard-shell[data-theme="dark"] .forecast-button.is-loading {
+  border-color: #506256;
+  background: #506256;
+}
+
+.dashboard-shell[data-theme="dark"] .recommendation-panel {
+  border-color: #3b5943;
+  background: #202d24;
+  color: #e0ece2;
+}
+
+.dashboard-shell[data-theme="dark"] .recommendation-panel p {
+  color: #b1c2b5;
+}
+
+.dashboard-shell[data-theme="dark"] .ranking-item {
+  border-color: #3b4a3f;
+  background: #19221c;
+}
+
+.dashboard-shell[data-theme="dark"] .ranking-item.is-top {
+  border-color: #5a9469;
+  box-shadow: inset 3px 0 #70b783;
+}
+
+.dashboard-shell[data-theme="dark"] .ranking-crop,
+.dashboard-shell[data-theme="dark"] .validation-strip strong {
+  color: #d8e8db;
+}
+
+.dashboard-shell[data-theme="dark"] .metric-panel-accent {
+  border-color: #3c5944;
+  background: #202d24;
+}
+
+.dashboard-shell[data-theme="dark"] .metric-value {
+  color: #edf4ee;
+}
+
+.dashboard-shell[data-theme="dark"] .metric-panel-accent .metric-value {
+  color: #9bd0a7;
+}
+
+.dashboard-shell[data-theme="dark"] .metric-value span {
+  color: #a4b2a7;
+}
+
+.dashboard-shell[data-theme="dark"] .urgency-critical {
+  --severity-color: #ff9a8c;
+  --severity-background: #482925;
+}
+
+.dashboard-shell[data-theme="dark"] .urgency-high {
+  --severity-color: #f2b176;
+  --severity-background: #44301f;
+}
+
+.dashboard-shell[data-theme="dark"] .urgency-moderate {
+  --severity-color: #e0c477;
+  --severity-background: #3e3723;
+}
+
+.dashboard-shell[data-theme="dark"] .urgency-normal {
+  --severity-color: #91d0a0;
+  --severity-background: #243a2a;
+}
+
+.dashboard-shell[data-theme="dark"] .recharts-cartesian-axis-tick-value,
+.dashboard-shell[data-theme="dark"] .recharts-legend-item-text {
+  fill: #bdc9bf !important;
+  color: #bdc9bf !important;
+}
+
+.dashboard-shell[data-theme="dark"] .recharts-cartesian-grid-horizontal line {
+  stroke: #354239;
+}
+
+.dashboard-shell[data-theme="dark"] .recharts-tooltip-wrapper>div {
+  border-color: #435247 !important;
+  background-color: #202923 !important;
+  color: #e2e9e3 !important;
+}
+
 @media print {
   .dashboard-shell {
     width: 100%;

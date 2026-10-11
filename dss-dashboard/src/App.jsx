@@ -17,6 +17,13 @@ const fallbackHistory = {
 };
 
 export default function Dashboard() {
+  const [theme, setTheme] = useState(() => {
+    try {
+      return window.localStorage.getItem('crop-outlook-theme') === 'dark' ? 'dark' : 'light';
+    } catch {
+      return 'light';
+    }
+  });
   const [crop, setCrop] = useState('Cassava');
   const [rainfall, setRainfall] = useState('1200');
   const [tmax, setTmax] = useState('31.5');
@@ -32,6 +39,14 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [historicalData, setHistoricalData] = useState([]);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem('crop-outlook-theme', theme);
+    } catch {
+      // The selected theme still applies for this session if storage is unavailable.
+    }
+  }, [theme]);
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -114,7 +129,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="dashboard-shell">
+    <div className="dashboard-shell" data-theme={theme}>
       <header className="dashboard-header print:mb-4">
         <div className="brand-block">
           <span className="brand-eyebrow">RIZAL AGRICULTURE</span>
@@ -131,6 +146,25 @@ export default function Dashboard() {
         <div className="dashboard-actions print:hidden">
           <button onClick={handlePrint} className="export-button">
             Export report
+          </button>
+          <button
+            type="button"
+            className="theme-toggle"
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+            aria-pressed={theme === 'dark'}
+            title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+          >
+            {theme === 'dark' ? (
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M20.2 15.2A8.5 8.5 0 0 1 8.8 3.8 8.5 8.5 0 1 0 20.2 15.2Z" />
+              </svg>
+            )}
           </button>
           <div className="dashboard-status">
             <span className="status-dot" aria-hidden="true" />
