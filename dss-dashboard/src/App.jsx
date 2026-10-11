@@ -114,41 +114,46 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8 font-sans">
-      <header className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 print:mb-4">
-        <div>
-          <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">FORECASTING DASHBOARD</h1>
-          <p className="text-lg text-gray-700 font-medium mt-1">Agrometeorological Forecasting & Crop Recommendation</p>
+    <div className="dashboard-shell">
+      <header className="dashboard-header print:mb-4">
+        <div className="brand-block">
+          <span className="brand-eyebrow">RIZAL AGRICULTURE</span>
+          <h1 className="dashboard-title">Crop outlook</h1>
+          <p className="dashboard-subtitle">Yield forecasting and crop recommendations</p>
 
-          {/* NEW: Official Document Location Badge (Highly visible on print) */}
           {submittedParams.location && (
-            <div className="mt-3 inline-flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-900 px-3 py-1.5 rounded-md font-bold text-sm shadow-sm">
-              <span>📍 Target Location:</span>
-              <span className="uppercase tracking-wide">{submittedParams.location}</span>
+            <div className="location-chip">
+              <span>Farm location</span>
+              <span>{submittedParams.location}</span>
             </div>
           )}
         </div>
-        <div className="flex gap-4 print:hidden">
-          <button onClick={handlePrint} className="text-base font-bold text-blue-800 bg-blue-100 px-5 py-2.5 rounded shadow-sm hover:bg-blue-200 transition flex items-center gap-2">
-            🖨️ Export LGU Report
+        <div className="dashboard-actions print:hidden">
+          <button onClick={handlePrint} className="export-button">
+            Export report
           </button>
-          <div className="text-base font-bold text-green-800 bg-green-100 px-4 py-2.5 rounded border border-green-400 flex items-center">
-            🟢 Scenario Planning Mode
+          <div className="dashboard-status">
+            <span className="status-dot" aria-hidden="true" />
+            Scenario planning
           </div>
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="dashboard-layout">
 
-        {/* Controls Section */}
-        <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200 print:hidden">
-          <h2 className="text-2xl font-black mb-6 text-gray-900 border-b-2 border-gray-100 pb-3">Simulation Parameters</h2>
+        <aside className="control-panel print:hidden">
+          <div className="panel-heading">
+            <div>
+              <span className="section-kicker">Scenario</span>
+              <h2>Inputs</h2>
+            </div>
+          </div>
 
-          <label className="block mb-2 font-bold text-gray-800 text-base uppercase tracking-wide">
-            Target Crop <span className="text-gray-600 italic normal-case font-normal ml-1">(Piling Pananim)</span>
+          <label className="field-label">
+            Target crop <span className="field-hint">Piling pananim</span>
           </label>
           <select
-            className="w-full p-3 text-base border-2 border-gray-300 rounded-lg mb-8 bg-gray-50 focus:border-green-500 focus:ring-0 outline-none cursor-pointer font-medium"
+            className="form-control crop-select"
             value={crop}
             onChange={handleCropChange}
           >
@@ -157,75 +162,74 @@ export default function Dashboard() {
             <option value="Camote">Camote (Sweet Potato)</option>
           </select>
 
-          <h3 className="font-extrabold text-lg text-gray-900 mb-4 border-b-2 border-gray-100 pb-2">Farm Specifications</h3>
+          <h3 className="section-title">Farm details</h3>
 
-          {/* NEW: Location Input Field */}
-          <div className="mb-6">
-            <label className="block mb-2 font-bold text-gray-800 text-sm uppercase tracking-wide">
-              Farm Name / Location <span className="text-gray-600 italic normal-case font-normal block mt-1">(Pangalan o Lugar ng Sakahan)</span>
+          <div className="input-group">
+            <label className="field-label">
+              Farm name or location <span className="field-hint">Pangalan o lugar ng sakahan</span>
             </label>
             <input
               type="text"
               placeholder="e.g. Brgy. Ampid, San Mateo"
-              className="w-full p-3 text-base font-medium border-2 border-gray-300 rounded-lg bg-gray-50 outline-none focus:border-green-500"
+              className="form-control"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
             />
           </div>
 
-          <div className="mb-8">
-            <label className="block mb-2 font-bold text-gray-800 text-sm uppercase tracking-wide">
-              Target Area <span className="text-gray-600 italic normal-case font-normal block mt-1">(Laki ng Sakahan sa Ektarya)</span>
+          <div className="input-group area-group">
+            <label className="field-label">
+              Farm area <span className="field-hint">Laki ng sakahan sa ektarya</span>
             </label>
-            <div className="flex items-center gap-3">
+            <div className="area-row">
               <input
                 type="number"
-                className="w-32 p-3 text-base font-medium border-2 border-gray-300 rounded-lg bg-gray-50 outline-none focus:border-green-500"
+                className="form-control area-input"
                 value={farmSize}
                 onChange={handleLimitedInput(setFarmSize, 6)}
               />
-              <span className="font-bold text-gray-600">Hectares (ha)</span>
+              <span className="unit-label">hectares</span>
             </div>
           </div>
 
-          <h3 className="font-extrabold text-lg text-gray-900 mb-4 border-b-2 border-gray-100 pb-2">Weather Telemetry</h3>
+          <h3 className="section-title weather-title">Seasonal weather</h3>
 
-          <div className="mb-6">
-            <label className="block mb-2 font-bold text-gray-800 text-base flex justify-between items-end">
+          <div className="input-group">
+            <label className="field-label field-label-row">
               <span>Semestral Rainfall (mm)</span>
-              <span className="text-gray-600 italic text-sm font-normal">Naipong Ulan</span>
+              <span className="field-hint">Naipong ulan</span>
             </label>
-            <div className="flex items-center gap-4 mb-2">
+            <div className="slider-row">
               <input
                 type="range" min="300" max="6000" step="10"
-                className="w-full accent-blue-600 h-2 cursor-pointer flex-grow"
+                className="range-control rainfall-range"
                 value={Number(rainfall) || 0}
                 onChange={handleLimitedInput(setRainfall, 4)}
               />
               <input
                 type="number"
-                className="w-24 p-2 text-base font-black text-blue-700 border-2 border-gray-300 rounded-lg outline-none focus:border-blue-500 text-center"
+                className="form-control number-control"
                 value={rainfall}
                 onChange={handleLimitedInput(setRainfall, 4)}
               />
             </div>
           </div>
 
-          <div className="mb-8">
-            <label className="block mb-2 font-bold text-gray-800 text-base flex justify-between items-end">
+          <div className="input-group temperature-group">
+            <label className="field-label field-label-row">
               <span>Average Max Temp (°C)</span>
-              <span className="text-gray-600 italic text-sm font-normal">Sukdulang Init</span>
+              <span className="field-hint">Sukdulang init</span>
             </label>
-            <div className="flex items-center gap-4 mb-2">
+            <div className="slider-row">
               <input
                 type="range" min="28.0" max="60.0" step="0.5"
-                className="w-full accent-orange-500 h-2 cursor-pointer flex-grow"
+                className="range-control temperature-range"
                 value={Number(tmax) || 0}
                 onChange={handleLimitedInput(setTmax, 4)}
               />
               <input
                 type="number"
-                className="w-24 p-2 text-base font-black text-orange-700 border-2 border-gray-300 rounded-lg outline-none focus:border-orange-500 text-center"
+                className="form-control number-control"
                 value={tmax}
                 onChange={handleLimitedInput(setTmax, 4)}
               />
@@ -233,7 +237,7 @@ export default function Dashboard() {
           </div>
 
           {errorMsg && (
-            <div className="mb-4 p-3 bg-red-100 border-l-4 border-red-500 text-red-700 font-bold text-sm rounded">
+            <div className="inline-error">
               {errorMsg}
             </div>
           )}
@@ -241,30 +245,29 @@ export default function Dashboard() {
           <button
             onClick={handleForecast}
             disabled={isLoading}
-            className={`w-full font-extrabold text-lg py-4 rounded-xl transition shadow-lg flex justify-center items-center gap-2 ${isLoading ? 'bg-gray-400 cursor-not-allowed text-gray-100' : 'bg-green-600 hover:bg-green-700 text-white cursor-pointer'}`}
+            className={`forecast-button ${isLoading ? 'is-loading' : ''}`}
           >
-            {isLoading ? '⚙️ Processing AI Model...' : 'Run Scenario Projection'}
+            {isLoading ? 'Calculating forecast...' : 'Run forecast'}
           </button>
-        </div>
+        </aside>
 
-        {/* Results Section */}
-        <div className="lg:col-span-2 space-y-6">
+        <main className="results-column">
 
           {/* AI CROP RECOMMENDATION ENGINE */}
           {recommendation && (
-            <div className="bg-gradient-to-r from-green-800 to-green-600 p-6 rounded-xl shadow-lg border border-green-900 text-white print:break-inside-avoid print:shadow-none print:border-gray-400">
-              <div className="text-sm font-extrabold uppercase tracking-widest mb-1 text-green-200">Crop Suitability Engine</div>
-              <h2 className="text-2xl font-black mb-4">Top Recommendation: {recommendation[0].crop} 🏆</h2>
-              <p className="text-sm text-green-100 mb-4 leading-relaxed">
-                Based on your forecasted weather (<strong className="bg-green-900/40 text-white px-2 py-0.5 rounded shadow-inner">{submittedParams.rainfall}mm rain, {submittedParams.tmax}°C</strong>), the system evaluated all crops against their historical baselines. <strong className="text-white">{recommendation[0].crop}</strong> is projected to retain the highest yield health (<strong className="bg-green-900/40 text-white px-2 py-0.5 rounded shadow-inner">{recommendation[0].health_score}% of normal capacity</strong>) under these specific conditions.
+            <div className="recommendation-panel print:break-inside-avoid">
+              <div className="section-kicker">Crop suitability</div>
+              <h2>Best fit: {recommendation[0].crop}</h2>
+              <p>
+                At {submittedParams.rainfall} mm rainfall and {submittedParams.tmax}°C, {recommendation[0].crop} is projected to retain {recommendation[0].health_score}% of normal yield capacity.
               </p>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="ranking-list">
                 {recommendation.map((item, index) => (
-                  <div key={item.crop} className={`p-3 rounded-lg border ${index === 0 ? 'bg-white text-green-900 border-green-300' : 'bg-green-700/50 border-green-500 text-white'} print:border-gray-400 print:text-black print:bg-white`}>
-                    <div className="text-xs font-bold uppercase opacity-80 print:text-gray-600">Rank #{index + 1}</div>
-                    <div className="text-lg font-black">{item.crop}</div>
-                    <div className="text-sm font-medium mt-1 print:text-gray-800">{item.health_score}% Yield Health</div>
+                  <div key={item.crop} className={`ranking-item ${index === 0 ? 'is-top' : ''}`}>
+                    <div className="ranking-label">Rank {index + 1}</div>
+                    <div className="ranking-crop">{item.crop}</div>
+                    <div className="ranking-score">{item.health_score}% yield health</div>
                   </div>
                 ))}
               </div>
@@ -273,15 +276,29 @@ export default function Dashboard() {
 
           {/* ACTIONABLE AGRONOMIC INTERVENTIONS */}
           {result && (
-            <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200 border-l-8 border-l-yellow-400 print:break-inside-avoid print:border-l-gray-300">
-              <h2 className="text-xl font-extrabold mb-5 text-gray-900">Actionable Agronomic Interventions for {crop}</h2>
-              <ul className="space-y-4">
+            <div className="interventions-panel print:break-inside-avoid">
+              <h2>Field recommendations for {crop}</h2>
+              <ul>
                 {result.recommendations.map((rec, idx) => (
-                  <li key={idx} className="flex flex-col bg-gray-50 p-4 rounded-lg border border-gray-200 print:border-none print:p-0">
-                    <span className={`text-sm font-black uppercase tracking-wide mb-2 print:text-black ${rec.urgency === 'Critical' ? 'text-red-700' : (rec.urgency === 'High' ? 'text-orange-600' : 'text-yellow-700')}`}>
-                      {rec.urgency === 'Critical' ? '🚨' : '⚠️'} {rec.alert} ({rec.urgency})
-                    </span>
-                    <span className="text-gray-800 text-base font-medium leading-relaxed">{rec.action}</span>
+                  <li key={idx} className="recommendation-row">
+                    <div className={`recommendation-heading urgency-${rec.urgency.toLowerCase()}`}>
+                      <span className="recommendation-icon" aria-hidden="true">
+                        {rec.urgency === 'Normal' ? (
+                          <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M20 11.1V12a8 8 0 1 1-4.75-7.32" />
+                            <path d="m8.5 11.5 3 3L21 5" />
+                          </svg>
+                        ) : (
+                          <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M10.3 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.7 3.86a2 2 0 0 0-3.42 0Z" />
+                            <path d="M12 9v4m0 4h.01" />
+                          </svg>
+                        )}
+                      </span>
+                      <span className="recommendation-alert">{rec.alert}</span>
+                      <span className="urgency-badge">{rec.urgency}</span>
+                    </div>
+                    <span className="recommendation-action">{rec.action}</span>
                   </li>
                 ))}
               </ul>
@@ -290,48 +307,54 @@ export default function Dashboard() {
 
           {/* TARGET CROP METRICS */}
           {result && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 print:break-inside-avoid">
-              <div className="bg-white p-5 rounded-xl shadow-md border border-gray-200 border-l-8 border-l-blue-500 print:border-gray-300">
-                <div className="text-sm text-gray-700 font-extrabold uppercase tracking-wide mb-1">Projected {crop} Yield Rate</div>
-                <div className="text-4xl font-black text-gray-900">{result.projected_yield_mt_ha} <span className="text-xl text-gray-600 font-bold">MT/ha</span></div>
+            <div className="metric-grid print:break-inside-avoid">
+              <div className="metric-panel">
+                <div className="metric-label">Projected yield · {crop}</div>
+                <div className="metric-value">{result.projected_yield_mt_ha} <span>MT/ha</span></div>
               </div>
 
-              <div className="bg-gray-900 p-5 rounded-xl shadow-md border border-gray-800 print:bg-white print:border-gray-300 print:border-l-8 print:border-l-green-500">
-                <div className="text-sm text-gray-400 font-extrabold uppercase tracking-wide mb-1 print:text-gray-700">Total Est. Harvest</div>
-                <div className="text-4xl font-black text-green-400 print:text-gray-900">{totalHarvestMT} <span className="text-xl text-gray-500 font-bold print:text-gray-600">MT</span></div>
+              <div className="metric-panel metric-panel-accent">
+                <div className="metric-label">Estimated harvest · {farmSize} ha</div>
+                <div className="metric-value">{totalHarvestMT} <span>MT</span></div>
               </div>
             </div>
           )}
 
           {/* ACADEMIC VALIDATION */}
           {result && (
-            <div className="flex flex-wrap gap-4 text-base bg-blue-50 p-4 rounded-lg border-2 border-blue-200 text-blue-900 font-bold print:hidden print:break-inside-avoid">
-              <span>Thesis Validation:</span>
-              <span className="bg-white px-2 py-0.5 rounded shadow-sm text-blue-800">R²: {result.model_metrics.R2}</span>
-              <span className="bg-white px-2 py-0.5 rounded shadow-sm text-blue-800">RMSE: {result.model_metrics.RMSE}</span>
-              <span className="bg-white px-2 py-0.5 rounded shadow-sm text-blue-800">MAE: {result.model_metrics.MAE}</span>
+            <div className="validation-strip print:hidden print:break-inside-avoid">
+              <span className="validation-title">Model metrics</span>
+              <span>R² <strong>{result.model_metrics.R2}</strong></span>
+              <span>RMSE <strong>{result.model_metrics.RMSE}</strong></span>
+              <span>MAE <strong>{result.model_metrics.MAE}</strong></span>
             </div>
           )}
 
           {/* DYNAMIC CHART */}
-          <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200 print:break-inside-avoid print:border-gray-300">
-            <h2 className="text-xl font-extrabold mb-6 text-gray-900">Historical vs. Projected Trajectory ({crop})</h2>
-            <div style={{ width: '100%', height: '350px' }} className="print:h-[300px]">
+          <div className="chart-panel print:break-inside-avoid">
+            <div className="chart-heading">
+              <div>
+                <span className="section-kicker">Yield history</span>
+                <h2>Seasonal trajectory</h2>
+              </div>
+              <span className="chart-crop">{crop}</span>
+            </div>
+            <div className="chart-container print:h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={displayChartData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#d1d5db" />
-                  <XAxis dataKey="semester" tick={{fill: '#374151', fontSize: 14, fontWeight: 600}} tickMargin={10} />
-                  <YAxis tick={{fill: '#374151', fontSize: 14, fontWeight: 600}} />
-                  <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', fontSize: '14px', fontWeight: 'bold' }}/>
-                  <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '14px', fontWeight: 'bold' }}/>
-                  <Line type="monotone" dataKey="actual" stroke="#374151" strokeWidth={4} name="Actual (PSA)" dot={{r: 6}} activeDot={{r: 8}} />
-                  <Line type="monotone" dataKey="forecast" stroke="#10b981" strokeWidth={4} strokeDasharray="6 6" name="Hybrid Forecast" dot={{r: 6}} activeDot={{r: 8}} />
+                  <XAxis dataKey="semester" tick={{ fill: '#374151', fontSize: 14, fontWeight: 600 }} tickMargin={10} />
+                  <YAxis tick={{ fill: '#374151', fontSize: 14, fontWeight: 600 }} />
+                  <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', fontSize: '14px', fontWeight: 'bold' }} />
+                  <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '14px', fontWeight: 'bold' }} />
+                  <Line type="monotone" dataKey="actual" stroke="#374151" strokeWidth={4} name="Actual (PSA)" dot={{ r: 6 }} activeDot={{ r: 8 }} />
+                  <Line type="monotone" dataKey="forecast" stroke="#10b981" strokeWidth={4} strokeDasharray="6 6" name="Hybrid Forecast" dot={{ r: 6 }} activeDot={{ r: 8 }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
           </div>
 
-        </div>
+        </main>
       </div>
     </div>
   );
