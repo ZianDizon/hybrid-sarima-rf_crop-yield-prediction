@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from sklearn.ensemble import RandomForestRegressor
+from datetime import datetime
 import warnings
 
 warnings.filterwarnings('ignore')
@@ -19,16 +20,25 @@ app.add_middleware(
 )
 
 # ---------------------------------------------------------
-# 1. LIVE TRAINING ON STARTUP
+# 1. LIVE TRAINING ON STARTUP & ACAP DA RULES
 # ---------------------------------------------------------
 print("Reading dataset and training crop-specific Hybrid models...")
 df = pd.read_csv("Rizal_Semestral_Trio_Data.csv")
 
+# Updated exactly to match the Optimized Machine Learning Configurations
 crop_configs = {
-    "Cassava": {"features": ['TMAX', 'TMIN', 'RH'], "order": (1, 1, 1), "seasonal": (1, 1, 0, 2), "depth": 2},
-    "Ginger": {"features": ['RAINFALL', 'TMAX', 'TMIN', 'RH'], "order": (1, 0, 0), "seasonal": (1, 0, 0, 2),
-               "depth": 4},
-    "Camote": {"features": ['TMAX', 'TMIN', 'RH'], "order": (0, 0, 1), "seasonal": (0, 1, 1, 2), "depth": 3}
+    "Cassava": {
+        "features": ['RAINFALL', 'TMAX', 'TMIN', 'RH'],
+        "order": (1, 1, 1), "seasonal": (0, 1, 1, 2), "depth": 2
+    },
+    "Ginger": {
+        "features": ['RAINFALL', 'TMAX', 'TMIN', 'RH'],
+        "order": (0, 0, 1), "seasonal": (1, 0, 0, 2), "depth": 4
+    },
+    "Camote": {
+        "features": ['TMAX', 'TMIN', 'RH'],
+        "order": (1, 0, 1), "seasonal": (1, 1, 0, 2), "depth": 3
+    }
 }
 
 sarima_models = {}
@@ -53,6 +63,115 @@ for crop, config in crop_configs.items():
 
 print("All models trained successfully! System is ready for live inference.")
 
+AGRONOMIC_RULES = {
+    "Cassava": {
+        "Above_Normal_Rainfall": {
+            "varieties": ["Golden Yellow", "Lakan 1"],
+            "interventions": [
+                {"alert": "High Waterlogging Risk", "action": "Construct deep drainage canals to prevent tuber rot.",
+                 "urgency": "Critical"},
+                {"alert": "Water Management", "action": "Plant on elevated ridges/mounds rather than flat ground.",
+                 "urgency": "High"},
+                {"alert": "Harvest Adjustment",
+                 "action": "Harvest early if continuous heavy rain is forecasted before maturity.",
+                 "urgency": "Moderate"}
+            ]
+        },
+        "Below_Normal_Rainfall": {
+            "varieties": ["Rayong 5", "Datu 1"],
+            "interventions": [
+                {"alert": "Osmotic Stress", "action": "Apply organic mulching to retain soil moisture.",
+                 "urgency": "High"},
+                {"alert": "Soil Management",
+                 "action": "Practice shallow cultivation to break capillary pores and reduce evaporation.",
+                 "urgency": "Moderate"},
+                {"alert": "Planting Schedule", "action": "Delay planting until the stable onset of the monsoon.",
+                 "urgency": "Normal"}
+            ]
+        }
+    },
+    "Camote": {
+        "Above_Normal_Rainfall": {
+            "varieties": ["Inmitlog", "Taiwan", "Ube-ube"],
+            "interventions": [
+                {"alert": "Aeration Required",
+                 "action": "Construct raised beds (at least 30-40cm high) to improve soil aeration.",
+                 "urgency": "High"},
+                {"alert": "Field Sanitation",
+                 "action": "Clear field borders of weeds to prevent water stagnation and pest breeding.",
+                 "urgency": "Moderate"},
+                {"alert": "Fertilizer Adjustment",
+                 "action": "Avoid applying nitrogen-heavy fertilizers which promote vines over tubers in wet conditions.",
+                 "urgency": "Normal"}
+            ]
+        },
+        "Below_Normal_Rainfall": {
+            "varieties": ["VSP 6", "PSB SP 17", "Superako"],
+            "interventions": [
+                {"alert": "Water Scarcity",
+                 "action": "Utilize drip irrigation or alternate-furrow irrigation if water is scarce.",
+                 "urgency": "Critical"},
+                {"alert": "Moisture Retention", "action": "Apply crop residues as mulch immediately after planting.",
+                 "urgency": "High"},
+                {"alert": "Soil Conditioning",
+                 "action": "Incorporate organic matter during land prep to improve water-holding capacity.",
+                 "urgency": "Moderate"}
+            ]
+        }
+    },
+    "Ginger": {
+        "Above_Normal_Rainfall": {
+            "varieties": ["Imugan", "Native"],
+            "interventions": [
+                {"alert": "Severe Rot Risk",
+                 "action": "Plant on raised beds and ensure strict field drainage (Ginger is highly susceptible to rhizome rot).",
+                 "urgency": "Critical"},
+                {"alert": "Fungal Prevention",
+                 "action": "Apply Trichoderma-based fungicides to soil to prevent fungal infections from waterlogging.",
+                 "urgency": "High"},
+                {"alert": "Spacing Adjustment",
+                 "action": "Avoid dense planting to allow air circulation and reduce humidity at the base.",
+                 "urgency": "Moderate"}
+            ]
+        },
+        "Below_Normal_Rainfall": {
+            "varieties": ["Hawaiian", "Imugan"],
+            "interventions": [
+                {"alert": "Heat Protection",
+                 "action": "Apply thick organic mulch (coconut leaves or rice straw) to protect shallow rhizomes from heat.",
+                 "urgency": "High"},
+                {"alert": "Shading Required",
+                 "action": "Provide artificial shading (e.g., intercropping with taller crops like maize or cassava).",
+                 "urgency": "Moderate"},
+                {"alert": "Irrigation Alert",
+                 "action": "Ensure consistent light irrigation; ginger rhizomes will crack under severe drought.",
+                 "urgency": "Critical"}
+            ]
+        }
+    }
+}
+
+
+def get_dynamic_forecast_target():
+    current_year = datetime.now().year
+    current_month = datetime.now().month
+
+    target_semester = "S2" if current_month >= 7 else "S1"
+    target_year = current_year
+
+    base_year = 2024
+    base_sem = 2
+
+    year_diff = target_year - base_year
+    steps = year_diff * 2
+
+    if target_semester == "S1" and base_sem == 2:
+        steps -= 1
+    elif target_semester == "S2" and base_sem == 1:
+        steps += 1
+
+    return target_year, target_semester, max(1, steps)
+
 
 class ForecastRequest(BaseModel):
     crop: str
@@ -62,35 +181,9 @@ class ForecastRequest(BaseModel):
     rh: float
 
 
-def generate_recommendations(crop: str, rainfall: float, tmax: float):
-    interventions = []
-    if rainfall > 1500:
-        interventions.append({
-            "alert": "High Waterlogging Risk",
-            "action": "Immediate field drainage adjustments required. Elevate planting ridges to prevent tuber/rhizome rot.",
-            "urgency": "Critical"
-        })
-    elif rainfall < 600:
-        interventions.append({
-            "alert": "Osmotic Stress / Soil Hardening",
-            "action": "Apply straw mulching to conserve soil moisture. Schedule supplementary irrigation during early establishment.",
-            "urgency": "High"
-        })
-
-    if tmax > 33.0:
-        interventions.append({
-            "alert": "Extreme Heat Stress",
-            "action": "Shift harvesting schedules to early morning to prevent immediate post-harvest desiccation.",
-            "urgency": "Moderate"
-        })
-
-    if not interventions:
-        interventions.append({
-            "alert": "Optimal Conditions",
-            "action": "Maintain standard seasonal planting and harvesting calendars.",
-            "urgency": "Normal"
-        })
-    return interventions
+def generate_acap_recommendations(crop: str, rainfall: float):
+    condition = "Above_Normal_Rainfall" if rainfall > 1200 else "Below_Normal_Rainfall"
+    return AGRONOMIC_RULES.get(crop, {}).get(condition, {})
 
 
 # ---------------------------------------------------------
@@ -104,8 +197,11 @@ def get_forecast(request: ForecastRequest):
     elif "Camote" in request.crop:
         target_crop = "Camote"
 
+    target_year, target_semester, steps_ahead = get_dynamic_forecast_target()
     config = crop_configs[target_crop]
-    baseline_yield = sarima_models[target_crop].forecast(steps=1)[0]
+
+    # Corrected .iloc[-1] to [-1] for NumPy arrays
+    baseline_yield = sarima_models[target_crop].forecast(steps=steps_ahead)[-1]
 
     user_inputs = {
         'RAINFALL': request.rainfall,
@@ -119,16 +215,18 @@ def get_forecast(request: ForecastRequest):
     final_yield = baseline_yield + residual_correction
     if final_yield < 0: final_yield = 0.0
 
+    # Metrics updated based on the actual 70/30 split results
     metrics = {
-        "Cassava": {"R2": "90.4%", "RMSE": "0.71", "MAE": "0.54"},
-        "Ginger": {"R2": "13.5%", "RMSE": "2.63", "MAE": "2.15"},
-        "Camote": {"R2": "-33.9%", "RMSE": "4.89", "MAE": "3.24"}
+        "Cassava": {"R2": "87.53%", "RMSE": "0.84", "MAE": "0.69"},
+        "Ginger": {"R2": "0.28%", "RMSE": "2.63", "MAE": "2.01"},
+        "Camote": {"R2": "56.50%", "RMSE": "3.53", "MAE": "2.62"}
     }
 
-    recommendations = generate_recommendations(target_crop, request.rainfall, request.tmax)
+    recommendations = generate_acap_recommendations(target_crop, request.rainfall)
 
     return {
         "crop": target_crop,
+        "target_semester_label": f"{target_year} {target_semester}",
         "projected_yield_mt_ha": round(final_yield, 2),
         "model_metrics": metrics[target_crop],
         "recommendations": recommendations
@@ -146,10 +244,7 @@ def get_history(crop_name: str):
     elif "Camote" in crop_name:
         target_crop = "Camote"
 
-    # Read directly from the CSV DataFrame loaded in memory
     crop_df = df[df['Crop'].str.contains(target_crop, case=False, na=False)].sort_values(['Year', 'Semester'])
-
-    # Grab the last 8 semesters for a clean chart
     recent_df = crop_df.tail(8)
 
     history = []
@@ -158,7 +253,6 @@ def get_history(crop_name: str):
             "semester": f"{int(row['Year'])} {row['Semester']}",
             "actual": round(float(row['Yield_MT_per_Ha']), 2)
         })
-
     return {"history": history}
 
 
@@ -173,13 +267,14 @@ class RecommendRequest(BaseModel):
 @app.post("/api/recommend")
 def get_recommendation(request: RecommendRequest):
     results = []
-
-    # Historical baselines to calculate how well the crop is surviving the weather
     baselines = {"Cassava": 11.5, "Ginger": 4.2, "Camote": 11.8}
+    _, _, steps_ahead = get_dynamic_forecast_target()
 
     for crop in ["Cassava", "Ginger", "Camote"]:
         config = crop_configs[crop]
-        baseline_yield = sarima_models[crop].forecast(steps=1)[0]
+
+        # Corrected .iloc[-1] to [-1] for NumPy arrays
+        baseline_yield = sarima_models[crop].forecast(steps=steps_ahead)[-1]
 
         user_inputs = {
             'RAINFALL': request.rainfall,
@@ -193,7 +288,6 @@ def get_recommendation(request: RecommendRequest):
         final_yield = baseline_yield + residual_correction
         if final_yield < 0: final_yield = 0.0
 
-        # Calculate survival rate (Projected Yield vs Normal Historical Yield)
         health_percentage = (final_yield / baselines[crop]) * 100
 
         results.append({
@@ -202,7 +296,5 @@ def get_recommendation(request: RecommendRequest):
             "health_score": round(health_percentage, 1)
         })
 
-    # Sort crops by health score (highest survival rate first)
     ranked_crops = sorted(results, key=lambda x: x['health_score'], reverse=True)
-
     return {"ranking": ranked_crops}
