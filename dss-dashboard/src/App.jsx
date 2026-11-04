@@ -270,13 +270,27 @@ export default function Dashboard() {
           width: 300px; flex: 0 0 300px; max-height: 100%; overflow-y: auto;
           padding: 20px; border: 1px solid ${borderColor}; border-radius: 12px;
           background: ${bgCard}; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+          transition: width 240ms cubic-bezier(0.2, 0.8, 0.2, 1), flex-basis 240ms cubic-bezier(0.2, 0.8, 0.2, 1), padding 180ms ease;
         }
         .simulation-panel.is-collapsed {
           width: 60px; flex-basis: 60px; padding: 12px; overflow: visible;
         }
-        .simulation-panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .simulation-panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; overflow: hidden; }
+        .simulation-panel-heading h2 {
+          max-width: 220px; overflow: hidden; white-space: nowrap; opacity: 1; transform: translateX(0);
+          transition: max-width 220ms ease, opacity 140ms ease, transform 180ms ease;
+        }
         .simulation-panel.is-collapsed .simulation-panel-heading { justify-content: center; }
-        .simulation-panel.is-collapsed .simulation-panel-heading h2 { display: none; }
+        .simulation-panel.is-collapsed .simulation-panel-heading h2 { max-width: 0; opacity: 0; transform: translateX(-8px); }
+        .simulation-panel-toggle svg { animation: toggle-icon-in 160ms ease both; }
+        @keyframes toggle-icon-in {
+          from { opacity: 0; transform: translateX(-3px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .simulation-panel, .simulation-panel-heading h2 { transition: none; }
+          .simulation-panel-toggle svg { animation: none; }
+        }
         .dashboard-main {
           flex: 1; min-width: 0; min-height: 0; height: 100%; display: flex; flex-direction: column;
           overflow: hidden; position: relative;
@@ -286,7 +300,7 @@ export default function Dashboard() {
           .simulation-panel { width: 100%; flex-basis: auto; max-height: none; }
           .simulation-panel.is-collapsed { width: 100%; flex-basis: auto; padding: 12px 16px; }
           .simulation-panel.is-collapsed .simulation-panel-heading { justify-content: space-between; }
-          .simulation-panel.is-collapsed .simulation-panel-heading h2 { display: block; }
+          .simulation-panel.is-collapsed .simulation-panel-heading h2 { max-width: 220px; opacity: 1; transform: translateX(0); }
           .dashboard-main { width: 100%; height: 65vh; flex: none; }
         }
         
@@ -361,6 +375,7 @@ export default function Dashboard() {
               <h2 id="simulation-inputs-heading" style={{ fontSize: '18px', fontWeight: 700 }}>Simulation Inputs</h2>
               <button
                 type="button"
+                className="simulation-panel-toggle"
                 aria-label={inputsCollapsed ? 'Expand simulation inputs' : 'Collapse simulation inputs'}
                 aria-expanded={!inputsCollapsed}
                 aria-controls="simulation-inputs-fields"
